@@ -22,7 +22,7 @@ export const Route = createFileRoute("/login")({
 
 const emailSchema = z.string().trim().email().max(255);
 
-function mapErr(e: { status?: number; message?: string }): TKey {
+function mapErr(e: { status?: number | undefined; message?: string | undefined }): TKey {
   const m = (e.message ?? "").toLowerCase();
   if (e.status === 429 || m.includes("rate") || m.includes("too many") || m.includes("seconds")) return "errWait";
   if (m.includes("expired") || m.includes("invalid") || m.includes("token")) return "errCode";
