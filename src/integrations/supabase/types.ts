@@ -14,13 +14,222 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      companies: {
+        Row: {
+          created_at: string
+          id: string
+          name: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          name: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          name?: string
+        }
+        Relationships: []
+      }
+      food_menus: {
+        Row: {
+          category: string
+          company_id: string
+          created_at: string
+          id: string
+          is_visible: boolean
+          name: string
+        }
+        Insert: {
+          category?: string
+          company_id: string
+          created_at?: string
+          id?: string
+          is_visible?: boolean
+          name: string
+        }
+        Update: {
+          category?: string
+          company_id?: string
+          created_at?: string
+          id?: string
+          is_visible?: boolean
+          name?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "food_menus_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      memberships: {
+        Row: {
+          company_id: string
+          created_at: string
+          role: string
+          user_id: string
+        }
+        Insert: {
+          company_id: string
+          created_at?: string
+          role?: string
+          user_id: string
+        }
+        Update: {
+          company_id?: string
+          created_at?: string
+          role?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "memberships_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      overtime_entries: {
+        Row: {
+          can_work: boolean
+          company_id: string
+          created_at: string
+          food_comment: string | null
+          food_id: string | null
+          food_name: string | null
+          hours: number | null
+          id: string
+          is_until_finished: boolean
+          response_type: string
+          session_id: string
+          updated_at: string
+          user_name: string
+        }
+        Insert: {
+          can_work?: boolean
+          company_id: string
+          created_at?: string
+          food_comment?: string | null
+          food_id?: string | null
+          food_name?: string | null
+          hours?: number | null
+          id?: string
+          is_until_finished?: boolean
+          response_type: string
+          session_id: string
+          updated_at?: string
+          user_name: string
+        }
+        Update: {
+          can_work?: boolean
+          company_id?: string
+          created_at?: string
+          food_comment?: string | null
+          food_id?: string | null
+          food_name?: string | null
+          hours?: number | null
+          id?: string
+          is_until_finished?: boolean
+          response_type?: string
+          session_id?: string
+          updated_at?: string
+          user_name?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "overtime_entries_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "overtime_entries_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "overtime_sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      overtime_sessions: {
+        Row: {
+          company_id: string
+          created_at: string
+          date: string
+          estimated_hours: number
+          id: string
+          includes_food: boolean
+          is_open: boolean
+          share_token: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          company_id: string
+          created_at?: string
+          date?: string
+          estimated_hours?: number
+          id?: string
+          includes_food?: boolean
+          is_open?: boolean
+          share_token?: string
+          title?: string
+          updated_at?: string
+        }
+        Update: {
+          company_id?: string
+          created_at?: string
+          date?: string
+          estimated_hours?: number
+          id?: string
+          includes_food?: boolean
+          is_open?: boolean
+          share_token?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "overtime_sessions_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      create_company: { Args: { p_name: string }; Returns: string }
+      is_member: { Args: { _company: string }; Returns: boolean }
+      public_get_my_answer: {
+        Args: { p_name: string; p_token: string }
+        Returns: Json
+      }
+      public_get_request: { Args: { p_token: string }; Returns: Json }
+      public_submit_answer: {
+        Args: {
+          p_food_comment: string
+          p_food_id: string
+          p_hours: number
+          p_name: string
+          p_response_type: string
+          p_token: string
+        }
+        Returns: Json
+      }
+      rotate_share_token: { Args: { p_session_id: string }; Returns: string }
     }
     Enums: {
       [_ in never]: never
