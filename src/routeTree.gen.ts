@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as PrivacyRouteImport } from './routes/privacy'
+import { Route as RTokenRouteImport } from './routes/r.$token'
 
 const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
   id: '/_authenticated',
@@ -27,35 +28,44 @@ const PrivacyRoute = PrivacyRouteImport.update({
   path: '/privacy',
   getParentRoute: () => rootRouteImport,
 } as any)
+const RTokenRoute = RTokenRouteImport.update({
+  id: '/r/$token',
+  path: '/r/$token',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof AuthenticatedRouteRoute
   '/login': typeof LoginRoute
   '/privacy': typeof PrivacyRoute
+  '/r/$token': typeof RTokenRoute
 }
 export interface FileRoutesByTo {
   '/': typeof AuthenticatedRouteRoute
   '/login': typeof LoginRoute
   '/privacy': typeof PrivacyRoute
+  '/r/$token': typeof RTokenRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/_authenticated': typeof AuthenticatedRouteRoute
   '/login': typeof LoginRoute
   '/privacy': typeof PrivacyRoute
+  '/r/$token': typeof RTokenRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/login' | '/privacy'
+  fullPaths: '/' | '/login' | '/privacy' | '/r/$token'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/login' | '/privacy'
-  id: '__root__' | '/_authenticated' | '/login' | '/privacy'
+  to: '/' | '/login' | '/privacy' | '/r/$token'
+  id: '__root__' | '/_authenticated' | '/login' | '/privacy' | '/r/$token'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRoute
   LoginRoute: typeof LoginRoute
   PrivacyRoute: typeof PrivacyRoute
+  RTokenRoute: typeof RTokenRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -81,6 +91,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PrivacyRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/r/$token': {
+      id: '/r/$token'
+      path: '/r/$token'
+      fullPath: '/r/$token'
+      preLoaderRoute: typeof RTokenRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -88,6 +105,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRouteRoute: AuthenticatedRouteRoute,
   LoginRoute: LoginRoute,
   PrivacyRoute: PrivacyRoute,
+  RTokenRoute: RTokenRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
