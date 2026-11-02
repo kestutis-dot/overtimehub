@@ -6,6 +6,7 @@ import { ArrowUp, Check, CircleCheckBig, Clock, Lock, Pizza, Unlink, UtensilsCro
 import { supabase } from "@/integrations/supabase/client";
 import { LangSwitch, Logo, Message, Spinner, type ResponseType } from "@/components/app/common";
 import { parseHours, useI18n, type TKey } from "@/lib/i18n";
+import { DurationPicker } from "@/components/app/DurationPicker";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/r/$token")({
@@ -368,19 +369,16 @@ function EmployeePage() {
                       {t("howMany")}
                     </label>
                     <p className="text-lg text-muted-foreground">{t("maxHours", { n: num(est) })}</p>
-                    <div className="mt-3 flex gap-3">
-                      <input
+                    <div className="mt-3">
+                      <DurationPicker
                         id="hours"
-                        inputMode="decimal"
-                        autoComplete="off"
-                        value={hoursText}
-                        onChange={(e) => setHoursText(e.target.value)}
-                        onKeyDown={(e) => {
-                          if (e.key === "Enter") answer("partial");
-                        }}
+                        max={est}
+                        value={parseHours(hoursText) || 0}
+                        onChange={(h) => setHoursText(String(h))}
                         tabIndex={partialOpen ? 0 : -1}
-                        className="h-16 w-32 rounded-xl border-2 border-input bg-card px-4 text-center text-3xl font-bold"
                       />
+                    </div>
+                    <div className="mt-3 flex gap-3">
                       <button
                         type="button"
                         tabIndex={partialOpen ? 0 : -1}

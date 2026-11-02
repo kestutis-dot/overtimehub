@@ -7,6 +7,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Skeleton } from "@/components/ui/skeleton";
 import { AnswerPill, Confirm, Message, Spinner, type ResponseType } from "@/components/app/common";
 import { parseHours, useI18n } from "@/lib/i18n";
+import { DurationPicker } from "./DurationPicker";
 import { entriesQuery, sessionQuery, shareUrl, totals, type Entry, type Session } from "@/lib/manager-data";
 
 const btn = "flex h-14 items-center justify-center gap-2 rounded-xl border-2 px-4 text-lg font-bold";
@@ -199,7 +200,7 @@ function SessionForm({ companyId, session, onDone }: { companyId: string; sessio
         <form className="space-y-3" onSubmit={(e) => { e.preventDefault(); setErr(false); save.mutate(); }}>
           <label className="block text-lg font-bold">{t("title")}<input className={input} value={title} maxLength={80} onChange={(e) => setTitle(e.target.value)} /></label>
           <label className="block text-lg font-bold">{t("date")}<input type="date" className={input} value={day} onChange={(e) => setDay(e.target.value)} /></label>
-          <label className="block text-lg font-bold">{t("estHours")}<input inputMode="decimal" className={input} value={hours} onChange={(e) => setHours(e.target.value)} /></label>
+          <div><p className="text-lg font-bold">{t("estHours")}</p><DurationPicker max={24} value={parseHours(hours) || 0} onChange={(h) => setHours(String(h))} /></div>
           <label className="flex h-14 items-center gap-3 text-lg font-bold">
             <input type="checkbox" className="size-7" checked={food} onChange={(e) => setFood(e.target.checked)} /> 🍕 {t("includesFood")}
           </label>
