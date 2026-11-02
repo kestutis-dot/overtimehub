@@ -1,8 +1,56 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useNavigate } from "@tanstack/react-router";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { z } from "zod";
-import { Building2, LogOut, Save, ShieldCheck, Languages, Smartphone } from "lucide-react";
+import { Building2, LogOut, Save, ShieldCheck, Languages, Pizza } from "lucide-react";
+
+function FoodHoursForm({ companyId }: { companyId: string }) {
+  const { t } = useI18n();
+  const q = useQuery({
+    queryKey: ["food-hours", companyId],
+    queryFn: async () => {
+      const { data, error } = await supabase.from("companies").select("min_hours_for_food").eq("id", companyId).single();
+      if (error) throw error;
+      return Number(data.min_hours_for_food);
+    },
+  });
+  const [val, setVal] = useState("2");
+  const [status, setStatus] = useState<"ok" | "err" | null>(null);
+  useEffect(() => {
+    if (q.data !== undefined) setVal(String(q.data));
+  }, [q.data]);
+  const save = useMutation({
+    mutationFn: async (n: number) => {
+      const { error } = await supabase.from("companies").update({ min_hours_for_food: n }).eq("id", companyId);
+      if (error) throw error;
+    },
+    onSuccess: () => setStatus("ok"),
+    onError: () => setStatus("err"),
+  });
+  return (
+    <section className="rounded-2xl border-2 bg-card p-5">
+      <form onSubmit={(e) => {
+        e.preventDefault();
+        const n = Number(val.replace(",", "."));
+        if (!Number.isFinite(n) || n < 0 || n > 24) return setStatus("err");
+        save.mutate(n);
+      }}>
+        <label htmlFor="fh" className="mb-1 flex items-center gap-2 text-2xl font-bold"><Pizza className="size-7" aria-hidden /> Timer nødvendig for å låse opp mat</label>
+        <p className="mb-3 text-lg text-muted-foreground">Hvis du har jobbet mer enn dette antallet timer, kan du bestille mat.</p>
+        <div className="flex flex-col gap-3 sm:flex-row">
+          <input id="fh" type="number" min={0} max={24} step={0.5} value={val}
+            onChange={(e) => { setVal(e.target.value); setStatus(null); }}
+            className="h-14 w-full rounded-xl border-2 border-input bg-card px-4 text-lg sm:w-32" />
+          <button disabled={save.isPending} className="flex h-14 items-center justify-center gap-2 rounded-xl bg-primary px-6 text-lg font-bold text-primary-foreground">
+            {save.isPending ? <Spinner /> : <Save aria-hidden />} {t("save")}
+          </button>
+        </div>
+      </form>
+      {status === "ok" ? <Message kind="success" className="mt-3">{t("saved")}</Message> : null}
+      {status === "err" ? <Message kind="error" className="mt-3">{t("saveError")}</Message> : null}
+    </section>
+  );
+}
 import { supabase } from "@/integrations/supabase/client";
 import { LangSwitch, Message, Spinner } from "@/components/app/common";
 import { useI18n } from "@/lib/i18n";
@@ -57,11 +105,7 @@ export function SettingsTab({ companyId, companyName }: { companyId: string; com
         <h2 className="mb-3 flex items-center gap-2 text-2xl font-bold"><Languages className="size-7" aria-hidden /> {t("lang")}</h2>
         <LangSwitch />
       </section>
-      <section className="rounded-2xl border-2 bg-card p-5 text-lg">
-        <h2 className="mb-3 flex items-center gap-2 text-2xl font-bold"><Smartphone className="size-7" aria-hidden /> {t("homeHint")}</h2>
-        <p>{t("homeHintIos")}</p>
-        <p>{t("homeHintAndroid")}</p>
-      </section>
+      <FoodHoursForm companyId={companyId} />
       <div className="grid gap-3 sm:grid-cols-2">
         <Link to="/privacy" className="flex h-14 items-center justify-center gap-2 rounded-xl border-2 text-lg font-bold">
           <ShieldCheck aria-hidden /> {t("privacy")}
