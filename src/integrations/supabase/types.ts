@@ -18,16 +18,19 @@ export type Database = {
         Row: {
           created_at: string
           id: string
+          min_hours_for_food: number
           name: string
         }
         Insert: {
           created_at?: string
           id?: string
+          min_hours_for_food?: number
           name: string
         }
         Update: {
           created_at?: string
           id?: string
+          min_hours_for_food?: number
           name?: string
         }
         Relationships: []
