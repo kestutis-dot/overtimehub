@@ -25,6 +25,7 @@ export const Route = createFileRoute("/r/$token")({
 type Request = {
   session: { id: string; date: string; title: string; estimated_hours: number; includes_food: boolean; is_open: boolean };
   company_name: string;
+  min_hours_for_food?: number;
   menu: { id: string; name: string; category: string }[];
 };
 type Answer = {
@@ -104,6 +105,9 @@ function EmployeePage() {
     setEditing(false);
   }, [debName]);
 
+  const foodOk = (v: { hours: number | null }) =>
+    !!req.data?.session.includes_food && (v.hours ?? 0) > Number(req.data?.min_hours_for_food ?? 0);
+
   const submit = useMutation({
     mutationFn: async (vars: { type: ResponseType; hours: number | null }) => {
       const { data, error } = await supabase.rpc("public_submit_answer", {
@@ -111,8 +115,8 @@ function EmployeePage() {
         p_name: name.trim(),
         p_response_type: vars.type,
         p_hours: vars.hours ?? 0,
-        p_food_id: vars.type === "declined" ? "" : (foodId ?? ""),
-        p_food_comment: vars.type === "declined" ? "" : comment.trim(),
+        p_food_id: vars.type === "declined" || !foodOk(vars) ? "" : (foodId ?? ""),
+        p_food_comment: vars.type === "declined" || !foodOk(vars) ? "" : comment.trim(),
       });
       if (error) throw error;
       return data;
@@ -148,6 +152,9 @@ function EmployeePage() {
 
   const { session, company_name, menu } = req.data;
   const est = Number(session.estimated_hours);
+  const threshold = Number(req.data.min_hours_for_food ?? 0);
+  const plannedHours = partialOpen ? parseHours(hoursText) : est;
+  const foodUnlocked = session.includes_food && !Number.isNaN(plannedHours) && plannedHours > threshold;
   const saved = my.data && debName === name.trim() ? my.data : null;
   const showConfirmation = saved && !editing && !submit.isPending;
 
@@ -160,7 +167,7 @@ function EmployeePage() {
       return false;
     }
     if (!commentSchema.safeParse(comment).success) return false;
-    if (type !== "declined" && session.includes_food && !foodId) {
+    if (type !== "declined" && foodUnlocked && !foodId) {
       setErr({ key: "errDish", where: "food" });
       foodRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
       return false;
@@ -261,7 +268,13 @@ function EmployeePage() {
           </StepCard>
 
           {/* 2 Food */}
-          {session.includes_food ? (
+          {session.includes_food && !foodUnlocked ? (
+            <section className="flex items-center gap-3 rounded-2xl border-2 bg-muted p-5 text-lg" role="status">
+              <Lock className="size-8 shrink-0" aria-hidden />
+              <p>Mat kan bestilles hvis du jobber mer enn {num(threshold)} timer.</p>
+            </section>
+          ) : null}
+          {foodUnlocked ? (
             <StepCard n={2} icon={<Pizza className="size-7" aria-hidden />} title={t("foodHead")} sectionRef={foodRef}>
               {err?.where === "food" ? (
                 <Message kind="error" className="mb-3">
@@ -321,7 +334,7 @@ function EmployeePage() {
           ) : null}
 
           {/* 3 Answer */}
-          <StepCard n={session.includes_food ? 3 : 2} icon={<CircleCheckBig className="size-7" aria-hidden />} title={t("answer")}>
+          <StepCard n={foodUnlocked ? 3 : 2} icon={<CircleCheckBig className="size-7" aria-hidden />} title={t("answer")}>
             <div className="space-y-3">
               <AnswerButton
                 variant="full"
