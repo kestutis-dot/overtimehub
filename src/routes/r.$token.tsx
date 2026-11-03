@@ -96,6 +96,7 @@ function EmployeePage() {
   const [foodId, setFoodId] = useState<string | null>(null);
   const [comment, setComment] = useState("");
   const [partialOpen, setPartialOpen] = useState(false);
+  const [fullChosen, setFullChosen] = useState(false);
   const [hoursText, setHoursText] = useState("");
   const [err, setErr] = useState<{ key: TKey; where: "name" | "food" | "hours" | "answer" } | null>(null);
   const foodRef = useRef<HTMLElement>(null);
@@ -127,6 +128,7 @@ function EmployeePage() {
       if ("vibrate" in navigator) navigator.vibrate?.(80);
       setEditing(false);
       setPartialOpen(false);
+      setFullChosen(false);
       return qc.invalidateQueries({ queryKey: ["my-answer", token] });
     },
     onError: (e: { message?: string }) => {
@@ -154,7 +156,7 @@ function EmployeePage() {
   const { session, company_name, menu } = req.data;
   const est = Number(session.estimated_hours);
   const threshold = Number(req.data.min_hours_for_food ?? 0);
-  const plannedHours = partialOpen ? parseHours(hoursText) : est;
+  const plannedHours = partialOpen ? parseHours(hoursText) : fullChosen ? est : NaN;
   const foodUnlocked = session.includes_food && !Number.isNaN(plannedHours) && plannedHours > threshold;
   const saved = my.data && debName === name.trim() ? my.data : null;
   const showConfirmation = saved && !editing && !submit.isPending;
@@ -191,6 +193,24 @@ function EmployeePage() {
     if (!validate(type)) return;
     submit.mutate({ type, hours: type === "full" ? est : 0 });
   }
+
+  function chooseFull() {
+    setPartialOpen(false);
+    setErr(null);
+    if (session.includes_food && est > threshold) {
+      if (!nameSchema.safeParse(name).success) {
+        validate("full");
+        return;
+      }
+      setFullChosen(true);
+      setTimeout(() => foodRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }), 50);
+      return;
+    }
+    setFullChosen(false);
+    answer("full");
+  }
+
+  const submitChosen = () => answer(partialOpen ? "partial" : "full");
 
   const answerLabel = (a: Answer) =>
     a.response_type === "full"
@@ -268,15 +288,91 @@ function EmployeePage() {
             ) : null}
           </StepCard>
 
-          {/* 2 Food */}
-          {session.includes_food && !foodUnlocked ? (
+          {/* 2 Answer */}
+          <StepCard n={2} icon={<CircleCheckBig className="size-7" aria-hidden />} title={t("answer")}>
+            <div className="space-y-3">
+              <AnswerButton
+                variant="full"
+                disabled={submit.isPending}
+                busy={submit.isPending && submit.variables?.type === "full"}
+                onClick={chooseFull}
+                icon={<Check className="size-8" aria-hidden />}
+                label={t("full")}
+              />
+              <AnswerButton
+                variant="partial"
+                disabled={submit.isPending}
+                busy={false}
+                onClick={() => {
+                  setPartialOpen((o) => !o);
+                  setFullChosen(false);
+                  setErr(null);
+                }}
+                icon={<CircleDashed className="size-8" aria-hidden />}
+                label={t("partial")}
+                expanded={partialOpen}
+              />
+              <div
+                className={cn(
+                  "grid transition-all duration-300",
+                  partialOpen ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0",
+                )}
+              >
+                <div className="overflow-hidden">
+                  <div className="rounded-xl border-2 border-partial bg-partial/5 p-4">
+                    <label htmlFor="hours" className="block text-xl font-bold">
+                      {t("howMany")}
+                    </label>
+                    <p className="text-lg text-muted-foreground">{t("maxHours", { n: num(est) })}</p>
+                    <div className="mt-3">
+                      <DurationPicker
+                        id="hours"
+                        max={est}
+                        value={parseHours(hoursText) || 0}
+                        onChange={(h) => setHoursText(String(h))}
+                        tabIndex={partialOpen ? 0 : -1}
+                      />
+                    </div>
+                    {!foodUnlocked ? <div className="mt-3 flex gap-3">
+                      <button
+                        type="button"
+                        tabIndex={partialOpen ? 0 : -1}
+                        disabled={submit.isPending}
+                        onClick={() => answer("partial")}
+                        className="flex h-16 flex-1 items-center justify-center gap-2 rounded-xl bg-partial text-2xl font-bold text-partial-foreground disabled:opacity-60"
+                      >
+                        {submit.isPending && submit.variables?.type === "partial" ? <Spinner /> : <Check aria-hidden />}
+                        {t("ok")}
+                      </button>
+                    </div> : null}
+                    {err?.where === "hours" ? (
+                      <Message kind="error" className="mt-3">{t("errHours", { n: num(est) })}</Message>
+                    ) : null}
+                  </div>
+                </div>
+              </div>
+              <AnswerButton
+                variant="declined"
+                disabled={submit.isPending}
+                busy={submit.isPending && submit.variables?.type === "declined"}
+                onClick={() => { setFullChosen(false); setPartialOpen(false); answer("declined"); }}
+                icon={<X className="size-8" aria-hidden />}
+                label={t("declined")}
+              />
+              {err?.where === "answer" ? <Message kind="error">{t(err.key)}</Message> : null}
+              {err?.where === "food" ? <Message kind="error">{t("errDish")}</Message> : null}
+            </div>
+          </StepCard>
+
+          {/* 3 Food */}
+          {session.includes_food && (partialOpen || fullChosen) && !foodUnlocked ? (
             <section className="flex items-center gap-3 rounded-2xl border-2 bg-muted p-5 text-lg" role="status">
               <Lock className="size-8 shrink-0" aria-hidden />
               <p>Mat kan bestilles hvis du jobber mer enn {num(threshold)} timer.</p>
             </section>
           ) : null}
           {foodUnlocked ? (
-            <StepCard n={2} icon={<Pizza className="size-7" aria-hidden />} title={t("foodHead")} sectionRef={foodRef}>
+            <StepCard n={3} icon={<Pizza className="size-7" aria-hidden />} title={t("foodHead")} sectionRef={foodRef}>
               {err?.where === "food" ? (
                 <Message kind="error" className="mb-3">
                   <span className="flex items-center gap-2">
@@ -331,83 +427,17 @@ function EmployeePage() {
                 onChange={(e) => setComment(e.target.value)}
                 className="mt-2 h-14 w-full rounded-xl border-2 border-input bg-card px-4 text-lg"
               />
+              <button
+                type="button"
+                disabled={submit.isPending}
+                onClick={submitChosen}
+                className="mt-5 flex h-16 w-full items-center justify-center gap-2 rounded-xl bg-success text-2xl font-bold text-success-foreground disabled:opacity-60"
+              >
+                {submit.isPending ? <Spinner /> : <Check aria-hidden />} {t("ok")}
+              </button>
             </StepCard>
           ) : null}
 
-          {/* 3 Answer */}
-          <StepCard n={foodUnlocked ? 3 : 2} icon={<CircleCheckBig className="size-7" aria-hidden />} title={t("answer")}>
-            <div className="space-y-3">
-              <AnswerButton
-                variant="full"
-                disabled={submit.isPending}
-                busy={submit.isPending && submit.variables?.type === "full"}
-                onClick={() => answer("full")}
-                icon={<Check className="size-8" aria-hidden />}
-                label={t("full")}
-              />
-              <AnswerButton
-                variant="partial"
-                disabled={submit.isPending}
-                busy={false}
-                onClick={() => {
-                  setPartialOpen((o) => !o);
-                  setErr(null);
-                }}
-                icon={<CircleDashed className="size-8" aria-hidden />}
-                label={t("partial")}
-                expanded={partialOpen}
-              />
-              <div
-                className={cn(
-                  "grid transition-all duration-300",
-                  partialOpen ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0",
-                )}
-              >
-                <div className="overflow-hidden">
-                  <div className="rounded-xl border-2 border-partial bg-partial/5 p-4">
-                    <label htmlFor="hours" className="block text-xl font-bold">
-                      {t("howMany")}
-                    </label>
-                    <p className="text-lg text-muted-foreground">{t("maxHours", { n: num(est) })}</p>
-                    <div className="mt-3">
-                      <DurationPicker
-                        id="hours"
-                        max={est}
-                        value={parseHours(hoursText) || 0}
-                        onChange={(h) => setHoursText(String(h))}
-                        tabIndex={partialOpen ? 0 : -1}
-                      />
-                    </div>
-                    <div className="mt-3 flex gap-3">
-                      <button
-                        type="button"
-                        tabIndex={partialOpen ? 0 : -1}
-                        disabled={submit.isPending}
-                        onClick={() => answer("partial")}
-                        className="flex h-16 flex-1 items-center justify-center gap-2 rounded-xl bg-partial text-2xl font-bold text-partial-foreground disabled:opacity-60"
-                      >
-                        {submit.isPending && submit.variables?.type === "partial" ? <Spinner /> : <Check aria-hidden />}
-                        {t("ok")}
-                      </button>
-                    </div>
-                    {err?.where === "hours" ? (
-                      <Message kind="error" className="mt-3">{t("errHours", { n: num(est) })}</Message>
-                    ) : null}
-                  </div>
-                </div>
-              </div>
-              <AnswerButton
-                variant="declined"
-                disabled={submit.isPending}
-                busy={submit.isPending && submit.variables?.type === "declined"}
-                onClick={() => answer("declined")}
-                icon={<X className="size-8" aria-hidden />}
-                label={t("declined")}
-              />
-              {err?.where === "answer" ? <Message kind="error">{t(err.key)}</Message> : null}
-              {err?.where === "food" ? <Message kind="error">{t("errDish")}</Message> : null}
-            </div>
-          </StepCard>
         </>
       )}
     </Shell>
