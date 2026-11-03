@@ -96,6 +96,7 @@ function EmployeePage() {
   const [foodId, setFoodId] = useState<string | null>(null);
   const [comment, setComment] = useState("");
   const [partialOpen, setPartialOpen] = useState(false);
+  const [fullChosen, setFullChosen] = useState(false);
   const [hoursText, setHoursText] = useState("");
   const [err, setErr] = useState<{ key: TKey; where: "name" | "food" | "hours" | "answer" } | null>(null);
   const foodRef = useRef<HTMLElement>(null);
@@ -154,7 +155,7 @@ function EmployeePage() {
   const { session, company_name, menu } = req.data;
   const est = Number(session.estimated_hours);
   const threshold = Number(req.data.min_hours_for_food ?? 0);
-  const plannedHours = partialOpen ? parseHours(hoursText) : est;
+  const plannedHours = partialOpen ? parseHours(hoursText) : fullChosen ? est : NaN;
   const foodUnlocked = session.includes_food && !Number.isNaN(plannedHours) && plannedHours > threshold;
   const saved = my.data && debName === name.trim() ? my.data : null;
   const showConfirmation = saved && !editing && !submit.isPending;
@@ -191,6 +192,21 @@ function EmployeePage() {
     if (!validate(type)) return;
     submit.mutate({ type, hours: type === "full" ? est : 0 });
   }
+
+  function chooseFull() {
+    setPartialOpen(false);
+    setErr(null);
+    if (session.includes_food && est > threshold) {
+      if (!nameSchema.safeParse(name).success) return validate("full");
+      setFullChosen(true);
+      setTimeout(() => foodRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }), 50);
+      return;
+    }
+    setFullChosen(false);
+    answer("full");
+  }
+
+  const submitChosen = () => answer(partialOpen ? "partial" : "full");
 
   const answerLabel = (a: Answer) =>
     a.response_type === "full"
