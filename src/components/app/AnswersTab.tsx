@@ -94,15 +94,15 @@ export function AnswersTab({ companyId }: { companyId: string }) {
             <button className={btn} onClick={() => void navigator.clipboard.writeText(url).then(() => setCopied(true))}>
               {copied ? <Check aria-hidden /> : <Copy aria-hidden />} {copied ? t("copied") : t("copy")}
             </button>
-            <a className={btn} href={`https://wa.me/?text=${encodeURIComponent(msg)}`} target="_blank" rel="noreferrer">💬 {t("whatsapp")}</a>
-            <a className={btn} href={`sms:?&body=${encodeURIComponent(msg)}`}><MessageSquare aria-hidden /> {t("sms")}</a>
             <button className={btn} onClick={() => {
               if (navigator.share) void navigator.share({ text: msg, url }).catch(() => undefined);
               else void navigator.clipboard.writeText(url).then(() => setCopied(true));
             }}><Share2 aria-hidden /> {t("share")}</button>
-            <button className={btn} onClick={() => setQr(true)}><QrCode aria-hidden /> {t("showQr")}</button>
-            <button className={btn} disabled={rotate.isPending} onClick={() => setConfirm("link")}>
-              {rotate.isPending ? <Spinner /> : <RefreshCw aria-hidden />} {t("newLink")}
+          </div>
+          <div className="mt-3 grid grid-cols-2 gap-3">
+            <button className={`${btn} whitespace-nowrap`} onClick={() => setQr(true)}><QrCode aria-hidden className="shrink-0" /> {t("showQr")}</button>
+            <button className={`${btn} whitespace-nowrap`} disabled={rotate.isPending} onClick={() => setConfirm("link")}>
+              {rotate.isPending ? <Spinner /> : <RefreshCw aria-hidden className="shrink-0" />} {t("newLink")}
             </button>
           </div>
         </section>
