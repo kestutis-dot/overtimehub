@@ -198,7 +198,10 @@ function EmployeePage() {
     setPartialOpen(false);
     setErr(null);
     if (session.includes_food && est > threshold) {
-      if (!nameSchema.safeParse(name).success) return validate("full");
+      if (!nameSchema.safeParse(name).success) {
+        validate("full");
+        return;
+      }
       setFullChosen(true);
       setTimeout(() => foodRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }), 50);
       return;
