@@ -3,7 +3,6 @@ import { useEffect, useState } from "react";
 import { z } from "zod";
 import { Mail, Send, RotateCcw, ArrowLeft } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp";
 import { LangSwitch, Logo, Message, Spinner } from "@/components/app/common";
 import { useI18n, type TKey } from "@/lib/i18n";
 
@@ -12,9 +11,9 @@ export const Route = createFileRoute("/login")({
   head: () => ({
     meta: [
       { title: "Logg inn – Overtid & Mat" },
-      { name: "description", content: "Logg inn med e-post og kode for å styre overtid og mat." },
+      { name: "description", content: "Logg inn med e-post for å styre overtid og mat." },
       { property: "og:title", content: "Logg inn – Overtid & Mat" },
-      { property: "og:description", content: "Logg inn med e-post og kode for å styre overtid og mat." },
+      { property: "og:description", content: "Logg inn med e-post for å styre overtid og mat." },
     ],
   }),
   component: Login,
@@ -34,7 +33,6 @@ function Login() {
   const navigate = useNavigate();
   const [step, setStep] = useState<"email" | "code">("email");
   const [email, setEmail] = useState("");
-  const [code, setCode] = useState("");
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState<TKey | null>(null);
   const [left, setLeft] = useState(0);
@@ -64,21 +62,7 @@ function Login() {
     if (error) return setErr(mapErr(error));
     setEmail(parsed.data);
     setStep("code");
-    setCode("");
     setLeft(60);
-  }
-
-  async function verify(token: string) {
-    if (busy) return;
-    setBusy(true);
-    setErr(null);
-    const { error } = await supabase.auth.verifyOtp({ email, token, type: "email" });
-    setBusy(false);
-    if (error) {
-      setCode("");
-      return setErr(mapErr(error));
-    }
-    navigate({ to: "/", replace: true });
   }
 
   return (
@@ -123,29 +107,11 @@ function Login() {
         </form>
       ) : (
         <div className="space-y-5">
-          <Message kind="info">{t("codeSent", { e: email })}</Message>
-          <label htmlFor="otp" className="block text-lg font-bold">
-            {t("enterCode")}
-          </label>
-          <InputOTP
-            id="otp"
-            maxLength={6}
-            inputMode="numeric"
-            autoComplete="one-time-code"
-            pattern="^[0-9]*$"
-            value={code}
-            onChange={setCode}
-            onComplete={(v: string) => void verify(v)}
-            disabled={busy}
-            autoFocus
-          >
-            <InputOTPGroup>
-              {[0, 1, 2, 3, 4, 5].map((i) => (
-                <InputOTPSlot key={i} index={i} className="h-16 w-12 text-2xl font-bold" />
-              ))}
-            </InputOTPGroup>
-          </InputOTP>
-          {busy ? <Spinner /> : null}
+          <div className="flex flex-col items-center gap-3 text-center">
+            <Mail className="size-14 text-primary" aria-hidden />
+            <h2 className="text-2xl font-bold">{t("enterCode")}</h2>
+            <p className="text-lg text-muted-foreground">{t("codeSent", { e: email })}</p>
+          </div>
           {err ? <Message kind="error">{t(err)}</Message> : null}
           <button
             type="button"
