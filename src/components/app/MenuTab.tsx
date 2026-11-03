@@ -112,20 +112,22 @@ export function MenuTab({ companyId }: { companyId: string }) {
         ) : (
           <ul className="divide-y-2">
             {(q.data ?? []).map((d) => (
-              <li key={d.id} className={cn("flex flex-wrap items-center gap-3 py-3", !d.is_visible && "opacity-60")}>
+              <li key={d.id} className={cn("flex flex-col gap-3 py-3 sm:flex-row sm:items-center", !d.is_visible && "opacity-60")}>
                 <div className="min-w-0 flex-1 text-lg">
-                  <span className="font-bold">{d.name}</span>
+                  <span className="block break-words font-bold">{d.name}</span>
                   <span className="block text-muted-foreground">{d.category}{!d.is_visible ? ` · ${t("hidden")}` : ""}</span>
                 </div>
-                <button type="button" disabled={d.id.startsWith("tmp-")}
-                  onClick={() => update.mutate({ id: d.id, is_visible: !d.is_visible })}
-                  className="flex h-14 items-center gap-2 rounded-xl border-2 px-4 text-lg font-bold">
-                  {d.is_visible ? <EyeOff aria-hidden /> : <Eye aria-hidden />} {d.is_visible ? t("hide") : t("show")}
-                </button>
-                <button type="button" disabled={d.id.startsWith("tmp-")} onClick={() => setToDelete(d)}
-                  className="flex h-14 items-center gap-2 rounded-xl border-2 border-destructive px-4 text-lg font-bold text-destructive">
-                  <Trash2 aria-hidden /> {t("delete")}
-                </button>
+                <div className="grid grid-cols-2 gap-3 sm:flex sm:shrink-0">
+                  <button type="button" disabled={d.id.startsWith("tmp-")}
+                    onClick={() => update.mutate({ id: d.id, is_visible: !d.is_visible })}
+                    className="flex h-14 items-center justify-center gap-2 whitespace-nowrap rounded-xl border-2 px-4 text-lg font-bold">
+                    {d.is_visible ? <EyeOff aria-hidden /> : <Eye aria-hidden />} {d.is_visible ? t("hide") : t("show")}
+                  </button>
+                  <button type="button" disabled={d.id.startsWith("tmp-")} onClick={() => setToDelete(d)}
+                    className="flex h-14 items-center justify-center gap-2 whitespace-nowrap rounded-xl border-2 border-destructive px-4 text-lg font-bold text-destructive">
+                    <Trash2 aria-hidden /> {t("delete")}
+                  </button>
+                </div>
               </li>
             ))}
           </ul>
