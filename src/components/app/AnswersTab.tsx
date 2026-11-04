@@ -8,6 +8,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { AnswerPill, Confirm, Message, Spinner, type ResponseType } from "@/components/app/common";
 import { parseHours, useI18n } from "@/lib/i18n";
 import { DurationPicker } from "./DurationPicker";
+import { ShareBar } from "./ShareBar";
 import { entriesQuery, sessionQuery, shareUrl, totals, type Entry, type Session } from "@/lib/manager-data";
 
 const btn = "flex h-14 items-center justify-center gap-2 rounded-xl border-2 px-4 text-lg font-bold";
@@ -145,6 +146,19 @@ export function AnswersTab({ companyId }: { companyId: string }) {
               })}
             </ul>
           )}
+          {entries.length > 0 ? (
+            <ShareBar
+              title={`${session.title} – ${session.date}`}
+              text={[
+                `✓ ${t("pillFull")}: ${tot.full} · ◐ ${tot.partial} · ✕ ${t("pillDeclined")}: ${tot.declined} · ⏱ ${num(tot.hours)}`,
+                "",
+                ...entries.map((x) => {
+                  const h = x.response_type === "declined" ? `✕ ${t("pillDeclined")}` : `${x.response_type === "full" ? "✓" : "◐"} ${t("hoursN", { n: num(Number(x.hours ?? 0)) })}`;
+                  return `• ${x.user_name} — ${h}${x.food_name ? ` · 🍕 ${x.food_name}` : ""}${x.food_comment ? ` (${x.food_comment})` : ""}`;
+                }),
+              ].join("\n")}
+            />
+          ) : null}
         </section>
       ) : null}
 
