@@ -1,6 +1,6 @@
-import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Copy, MessageSquare, Pizza, Check } from "lucide-react";
+import { Pizza } from "lucide-react";
+import { ShareBar } from "./ShareBar";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Message } from "@/components/app/common";
 import { useI18n } from "@/lib/i18n";
@@ -10,7 +10,6 @@ export function OrdersTab({ companyId }: { companyId: string }) {
   const { t } = useI18n();
   const s = useQuery(sessionQuery(companyId));
   const e = useQuery(entriesQuery(s.data?.id));
-  const [copied, setCopied] = useState(false);
 
   if (s.isLoading || e.isLoading) return <Skeleton className="h-64" />;
   const entries = (e.data ?? []).filter((x) => x.response_type !== "declined" && x.food_name);
@@ -19,6 +18,10 @@ export function OrdersTab({ companyId }: { companyId: string }) {
     (entries.some((x) => x.food_comment)
       ? "\n\n" + entries.filter((x) => x.food_comment).map((x) => `${x.food_name}: ${x.food_comment}`).join("\n")
       : "");
+  const title = `🍕 ${t("order")}${s.data ? ` – ${s.data.title} (${s.data.date})` : ""}`;
+  const fullText = text + (entries.length
+    ? `\n\n${t("whoOrdered")}:\n` + entries.map((x) => `• ${x.user_name}: ${x.food_name}${x.food_comment ? ` (${x.food_comment})` : ""}`).join("\n")
+    : "");
 
   return (
     <>
@@ -37,23 +40,7 @@ export function OrdersTab({ companyId }: { companyId: string }) {
                 </li>
               ))}
             </ul>
-            <div className="mt-4 grid grid-cols-2 gap-3">
-              <button
-                type="button"
-                onClick={() => {
-                  void navigator.clipboard.writeText(text).then(() => setCopied(true));
-                }}
-                className="flex h-14 items-center justify-center gap-2 rounded-xl bg-primary text-lg font-bold text-primary-foreground"
-              >
-                {copied ? <Check aria-hidden /> : <Copy aria-hidden />} {copied ? t("copied") : t("copy")}
-              </button>
-              <a
-                href={`sms:?&body=${encodeURIComponent(text)}`}
-                className="flex h-14 items-center justify-center gap-2 rounded-xl border-2 border-primary text-lg font-bold"
-              >
-                <MessageSquare aria-hidden /> {t("sms")}
-              </a>
-            </div>
+            <ShareBar title={title} text={fullText} />
           </>
         )}
       </section>
