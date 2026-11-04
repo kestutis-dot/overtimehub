@@ -104,6 +104,12 @@ function Login() {
           >
             {busy ? <Spinner /> : <Send aria-hidden />} {t("sendCode")}
           </button>
+          <p className="text-center text-base text-muted-foreground">
+            ☕ Liker du appen?{" "}
+            <a href="https://buymeacoffee.com/baltas" target="_blank" rel="noopener noreferrer" className="underline">
+              Spander en kaffe
+            </a>
+          </p>
         </form>
       ) : (
         <div className="space-y-5">

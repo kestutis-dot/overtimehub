@@ -106,6 +106,20 @@ export function SettingsTab({ companyId, companyName }: { companyId: string; com
         <LangSwitch />
       </section>
       <FoodHoursForm companyId={companyId} />
+      <section className="rounded-2xl border-2 bg-card p-5">
+        <h2 className="mb-2 text-2xl font-bold">☕ Liker du Overtid & Mat?</h2>
+        <p className="mb-4 text-lg text-muted-foreground">
+          Appen er gratis å bruke. Hvis den sparer deg for tid, kan du gjerne spandere en kaffe på utvikleren!
+        </p>
+        <a
+          href="https://buymeacoffee.com/baltas"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex h-14 w-full items-center justify-center gap-2 rounded-xl bg-primary text-lg font-bold text-primary-foreground"
+        >
+          ☕ Kjøp meg en kaffe
+        </a>
+      </section>
       <div className="grid gap-3 sm:grid-cols-2">
         <Link to="/privacy" className="flex h-14 items-center justify-center gap-2 rounded-xl border-2 text-lg font-bold">
           <ShieldCheck aria-hidden /> {t("privacy")}
