@@ -40,7 +40,7 @@ export function OrdersTab({ companyId }: { companyId: string }) {
                 </li>
               ))}
             </ul>
-            <ShareBar title={title} text={fullText} />
+            <ShareBar title={title} text={text} />
           </>
         )}
       </section>
@@ -55,6 +55,7 @@ export function OrdersTab({ companyId }: { companyId: string }) {
               </li>
             ))}
           </ul>
+          <ShareBar title={`🍕 ${t("whoOrdered")}${s.data ? ` – ${s.data.title} (${s.data.date})` : ""}`} text={fullText} />
         </section>
       ) : null}
     </>
