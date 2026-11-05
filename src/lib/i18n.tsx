@@ -8,6 +8,16 @@ export const LANGS = [
 export type Lang = (typeof LANGS)[number]["code"];
 
 const no = {
+  foodThreshTitle: "Timer nødvendig for å låse opp mat",
+  foodThreshHelp: "Hvis du har jobbet mer enn dette antallet timer, kan du bestille mat.",
+  coffeeTitle: "☕ Liker du Overtid & Mat?",
+  coffeeText: "Appen er gratis å bruke. Hvis den sparer deg for tid, kan du gjerne spandere en kaffe på utvikleren!",
+  coffeeBtn: "☕ Kjøp meg en kaffe",
+  coffeeLikeApp: "☕ Liker du appen?",
+  coffeeLink: "Spander en kaffe",
+  foodIfMore: "Mat kan bestilles hvis du jobber mer enn {n} timer.",
+  durHours: "Timer",
+  durMinutes: "Minutter",
   appName: "Overtid & Mat",
   lang: "Språk",
   hoursN: "{n} timer",
@@ -141,6 +151,16 @@ const no = {
 export type TKey = keyof typeof no;
 
 const en: Record<TKey, string> = {
+  foodThreshTitle: "Hours required to unlock food",
+  foodThreshHelp: "If you work more than this number of hours, you can order food.",
+  coffeeTitle: "☕ Enjoying Overtid & Mat?",
+  coffeeText: "The app is free to use. If it saves you time, feel free to buy the developer a coffee!",
+  coffeeBtn: "☕ Buy me a coffee",
+  coffeeLikeApp: "☕ Like the app?",
+  coffeeLink: "Buy a coffee",
+  foodIfMore: "Food can be ordered if you work more than {n} hours.",
+  durHours: "Hours",
+  durMinutes: "Minutes",
   appName: "Overtid & Mat",
   lang: "Language",
   hoursN: "{n} hours",
@@ -288,6 +308,11 @@ export function I18nProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const saved = window.localStorage.getItem(STORAGE);
     if (saved === "no" || saved === "en") setLangState(saved);
+    else {
+      const prefs = navigator.languages?.length ? navigator.languages : [navigator.language];
+      const isNo = prefs.some((l) => /^(nb|nn|no)\b/i.test(l || ""));
+      setLangState(isNo ? "no" : "en");
+    }
   }, []);
   useEffect(() => {
     document.documentElement.lang = lang === "no" ? "nb" : "en";

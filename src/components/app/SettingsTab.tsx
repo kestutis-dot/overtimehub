@@ -35,8 +35,8 @@ function FoodHoursForm({ companyId }: { companyId: string }) {
         if (!Number.isFinite(n) || n < 0 || n > 24) return setStatus("err");
         save.mutate(n);
       }}>
-        <label htmlFor="fh" className="mb-1 flex items-center gap-2 text-2xl font-bold"><Pizza className="size-7" aria-hidden /> Timer nødvendig for å låse opp mat</label>
-        <p className="mb-3 text-lg text-muted-foreground">Hvis du har jobbet mer enn dette antallet timer, kan du bestille mat.</p>
+        <label htmlFor="fh" className="mb-1 flex items-center gap-2 text-2xl font-bold"><Pizza className="size-7" aria-hidden /> {t("foodThreshTitle")}</label>
+        <p className="mb-3 text-lg text-muted-foreground">{t("foodThreshHelp")}</p>
         <div className="flex flex-col gap-3 sm:flex-row">
           <input id="fh" type="number" min={0} max={24} step={0.5} value={val}
             onChange={(e) => { setVal(e.target.value); setStatus(null); }}
@@ -107,9 +107,9 @@ export function SettingsTab({ companyId, companyName }: { companyId: string; com
       </section>
       <FoodHoursForm companyId={companyId} />
       <section className="rounded-2xl border-2 bg-card p-5">
-        <h2 className="mb-2 text-2xl font-bold">☕ Liker du Overtid & Mat?</h2>
+        <h2 className="mb-2 text-2xl font-bold">{t("coffeeTitle")}</h2>
         <p className="mb-4 text-lg text-muted-foreground">
-          Appen er gratis å bruke. Hvis den sparer deg for tid, kan du gjerne spandere en kaffe på utvikleren!
+          {t("coffeeText")}
         </p>
         <a
           href="https://buymeacoffee.com/baltas"
@@ -117,7 +117,7 @@ export function SettingsTab({ companyId, companyName }: { companyId: string; com
           rel="noopener noreferrer"
           className="flex h-14 w-full items-center justify-center gap-2 rounded-xl bg-primary text-lg font-bold text-primary-foreground"
         >
-          ☕ Kjøp meg en kaffe
+          {t("coffeeBtn")}
         </a>
       </section>
       <div className="grid gap-3 sm:grid-cols-2">

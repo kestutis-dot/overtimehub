@@ -14,9 +14,9 @@ export function DurationPicker({
   id?: string;
   tabIndex?: number;
 }) {
-  const { lang } = useI18n();
-  const hLabel = lang === "no" ? "Timer" : "Hours";
-  const mLabel = lang === "no" ? "Minutter" : "Minutes";
+  const { t } = useI18n();
+  const hLabel = t("durHours");
+  const mLabel = t("durMinutes");
   const v = Number.isFinite(value) ? Math.max(0, value) : 0;
   const h = Math.floor(v + 1e-9);
   const m = Math.round((v - h) * 60 / 15) * 15;
