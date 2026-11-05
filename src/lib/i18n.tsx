@@ -8,6 +8,7 @@ export const LANGS = [
 export type Lang = (typeof LANGS)[number]["code"];
 
 const no = {
+  overtimeQ: "Kan du jobbe overtid? Svar her",
   foodThreshTitle: "Timer nødvendig for å låse opp mat",
   foodThreshHelp: "Hvis du har jobbet mer enn dette antallet timer, kan du bestille mat.",
   coffeeTitle: "☕ Liker du Overtid & Mat?",
@@ -151,6 +152,7 @@ const no = {
 export type TKey = keyof typeof no;
 
 const en: Record<TKey, string> = {
+  overtimeQ: "Can you work overtime? Respond here",
   foodThreshTitle: "Hours required to unlock food",
   foodThreshHelp: "If you work more than this number of hours, you can order food.",
   coffeeTitle: "☕ Enjoying Overtid & Mat?",

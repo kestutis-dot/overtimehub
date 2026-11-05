@@ -149,7 +149,7 @@ function EmployeePage() {
   if (req.isError || !req.data)
     return (
       <Shell>
-        <BigState icon={<Unlink className="size-20" aria-hidden />} title={t("badLink")} text={t("badLinkHelp")} />
+        <BigState as="h1" icon={<Unlink className="size-20" aria-hidden />} title={t("badLink")} text={t("badLinkHelp")} />
       </Shell>
     );
 
@@ -223,8 +223,9 @@ function EmployeePage() {
     <Shell company={company_name}>
       {/* Request card */}
       <section className="rounded-2xl border-2 border-primary bg-card p-5 shadow-sm">
-        <p className="text-lg font-semibold capitalize text-muted-foreground">{date(session.date)}</p>
-        <h1 className="mt-1 text-3xl font-bold">{session.title}</h1>
+        <h1 className="text-2xl font-bold">{t("overtimeQ")}</h1>
+        <p className="mt-2 text-lg font-semibold capitalize text-muted-foreground">{date(session.date)}</p>
+        {session.title?.trim() ? <p className="mt-1 text-3xl font-bold">{session.title}</p> : null}
         <div className="mt-4 flex flex-wrap gap-3 text-xl font-bold">
           <span className="flex items-center gap-2 rounded-xl bg-muted px-4 py-2">
             <Clock className="size-7" aria-hidden /> {t("hoursN", { n: num(est) })}
@@ -471,11 +472,11 @@ function Shell({ children, company }: { children: React.ReactNode; company?: str
   );
 }
 
-function BigState({ icon, title, text }: { icon: React.ReactNode; title: string; text: string }) {
+function BigState({ icon, title, text, as: H = "h2" }: { icon: React.ReactNode; title: string; text: string; as?: "h1" | "h2" }) {
   return (
     <section className="flex flex-col items-center gap-4 rounded-2xl border-2 bg-card p-8 text-center" role="status">
       {icon}
-      <h2 className="text-3xl font-bold">{title}</h2>
+      <H className="text-3xl font-bold">{title}</H>
       <p className="text-xl">{text}</p>
     </section>
   );
