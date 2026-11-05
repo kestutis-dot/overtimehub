@@ -77,26 +77,6 @@ function Login() {
           <p className="mt-3 text-lg text-muted-foreground">{t("introText")}</p>
         </section>
       ) : null}
-      {FORM_SLOT}
-      {step === "email" ? (
-        <section className="mt-10">
-          <ul className="space-y-3">
-            {([
-              ["⚡", "introF1t", "introF1"],
-              ["🍕", "introF2t", "introF2"],
-              ["📋", "introF3t", "introF3"],
-            ] as const).map(([icon, title, text]) => (
-              <li key={title} className="flex gap-3 rounded-xl bg-card p-3">
-                <span className="text-2xl" aria-hidden>{icon}</span>
-                <div>
-                  <p className="font-bold">{t(title)}</p>
-                  <p className="text-base text-muted-foreground">{t(text)}</p>
-                </div>
-              </li>
-            ))}
-          </ul>
-        </section>
-      ) : null}
 
       {step === "email" ? (
         <form
@@ -166,6 +146,25 @@ function Login() {
           </button>
         </div>
       )}
+      {step === "email" ? (
+        <section className="mt-10">
+          <ul className="space-y-3">
+            {([
+              ["⚡", "introF1t", "introF1"],
+              ["🍕", "introF2t", "introF2"],
+              ["📋", "introF3t", "introF3"],
+            ] as const).map(([icon, title, text]) => (
+              <li key={title} className="flex gap-3 rounded-xl bg-card p-3">
+                <span className="text-2xl" aria-hidden>{icon}</span>
+                <div>
+                  <p className="font-bold">{t(title)}</p>
+                  <p className="text-base text-muted-foreground">{t(text)}</p>
+                </div>
+              </li>
+            ))}
+          </ul>
+        </section>
+      ) : null}
       <Link to="/privacy" className="mt-auto pt-10 text-lg underline">
         {t("privacy")}
       </Link>
