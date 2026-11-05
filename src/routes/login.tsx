@@ -71,7 +71,27 @@ function Login() {
         <Logo />
         <LangSwitch />
       </header>
-      <h1 className="mb-6 text-3xl font-bold">{t("login")}</h1>
+      {step === "email" ? (
+        <section className="mb-8">
+          <h1 className="text-3xl font-bold leading-tight">{t("introTitle")}</h1>
+          <p className="mt-3 text-lg text-muted-foreground">{t("introText")}</p>
+          <ul className="mt-5 space-y-3">
+            {([
+              ["⚡", "introF1t", "introF1"],
+              ["🍕", "introF2t", "introF2"],
+              ["📋", "introF3t", "introF3"],
+            ] as const).map(([icon, title, text]) => (
+              <li key={title} className="flex gap-3 rounded-xl bg-card p-3">
+                <span className="text-2xl" aria-hidden>{icon}</span>
+                <div>
+                  <p className="font-bold">{t(title)}</p>
+                  <p className="text-base text-muted-foreground">{t(text)}</p>
+                </div>
+              </li>
+            ))}
+          </ul>
+        </section>
+      ) : null}
 
       {step === "email" ? (
         <form
@@ -81,6 +101,8 @@ function Login() {
             void send();
           }}
         >
+          <h2 className="text-2xl font-bold">{t("getStarted")}</h2>
+          <p className="text-base text-muted-foreground">{t("getStartedHelp")}</p>
           <label htmlFor="email" className="block text-lg font-bold">
             {t("email")}
           </label>
