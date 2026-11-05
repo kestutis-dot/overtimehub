@@ -75,7 +75,12 @@ function Login() {
         <section className="mb-8">
           <h1 className="text-3xl font-bold leading-tight">{t("introTitle")}</h1>
           <p className="mt-3 text-lg text-muted-foreground">{t("introText")}</p>
-          <ul className="mt-5 space-y-3">
+        </section>
+      ) : null}
+      {FORM_SLOT}
+      {step === "email" ? (
+        <section className="mt-10">
+          <ul className="space-y-3">
             {([
               ["⚡", "introF1t", "introF1"],
               ["🍕", "introF2t", "introF2"],
