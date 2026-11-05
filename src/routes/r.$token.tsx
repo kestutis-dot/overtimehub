@@ -368,7 +368,7 @@ function EmployeePage() {
           {session.includes_food && (partialOpen || fullChosen) && !foodUnlocked ? (
             <section className="flex items-center gap-3 rounded-2xl border-2 bg-muted p-5 text-lg" role="status">
               <Lock className="size-8 shrink-0" aria-hidden />
-              <p>Mat kan bestilles hvis du jobber mer enn {num(threshold)} timer.</p>
+              <p>{t("foodIfMore", { n: num(threshold) })}</p>
             </section>
           ) : null}
           {foodUnlocked ? (
