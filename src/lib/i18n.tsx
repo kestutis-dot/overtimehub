@@ -22,7 +22,7 @@ const no = {
   scanError: "Kunne ikke lese menyen. Filen er beholdt. Prøv igjen eller legg til rettene manuelt.",
   scanDuplicates: "Rettene finnes allerede i menyen. Se over listen før du lagrer igjen.",
   scanCredits: "AI-kredittene er brukt opp. Appens eier må fylle på før menyen kan skannes.",
-  scanBusy: "Nuskaitymo paslauga užimta. Pabandykite vėliau.",
+  scanBusy: "Skannetjenesten er opptatt. Prøv igjen senere.",
   scanUnavailable: "Menyskanning er ikke tilgjengelig akkurat nå. Appens eier må kontrollere AI-tilgangen.",
   scanAccess: "Du har ikke tilgang til denne menyen.",
   overtimeQ: "Kan du jobbe overtid? Svar her",
