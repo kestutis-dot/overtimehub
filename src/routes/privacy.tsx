@@ -10,6 +10,8 @@ export const Route = createFileRoute("/privacy")({
       { name: "description", content: "Hvordan Overtid & Mat lagrer navn, matvalg og e-post." },
       { property: "og:title", content: "Personvern – Overtid & Mat" },
       { property: "og:description", content: "Hvordan Overtid & Mat lagrer navn, matvalg og e-post." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   component: Privacy,

@@ -19,8 +19,10 @@ export const Route = createFileRoute("/_authenticated/")({
     meta: [
       { title: "Overtid & Mat – Leder" },
       { name: "description", content: "Se svar på overtid, samle matbestilling og styr menyen." },
-      { property: "og:title", content: "Overtid & Mat" },
-      { property: "og:description", content: "Overtid og matbestilling for små lagerteam." },
+      { property: "og:title", content: "Overtid & Mat – Leder" },
+      { property: "og:description", content: "Se svar på overtid, samle matbestilling og styr menyen." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   component: ManagerApp,

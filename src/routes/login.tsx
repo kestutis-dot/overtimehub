@@ -14,6 +14,8 @@ export const Route = createFileRoute("/login")({
       { name: "description", content: "Logg inn med e-post for å styre overtid og mat." },
       { property: "og:title", content: "Logg inn – Overtid & Mat" },
       { property: "og:description", content: "Logg inn med e-post for å styre overtid og mat." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   component: Login,
