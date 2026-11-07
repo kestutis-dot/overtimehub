@@ -18,6 +18,8 @@ export const Route = createFileRoute("/r/$token")({
       { property: "og:title", content: "Kan du jobbe overtid?" },
       { property: "og:description", content: "Trykk for å svare og velge mat." },
       { name: "robots", content: "noindex" },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   component: EmployeePage,
