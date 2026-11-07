@@ -1,4 +1,5 @@
-import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
+import { useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
+import { I18nContext, type I18nContextValue } from "@/lib/i18n-context";
 
 // To add a language: add it to LANGS and add a dictionary with the same keys.
 export const LANGS = [
@@ -328,15 +329,6 @@ const en: Record<TKey, string> = {
 
 const dicts: Record<Lang, Record<TKey, string>> = { no, en };
 
-type Ctx = {
-  lang: Lang;
-  setLang: (l: Lang) => void;
-  t: (k: TKey, vars?: Record<string, string | number>) => string;
-  num: (n: number) => string;
-  date: (d: string) => string;
-};
-
-const I18nContext = createContext<Ctx | null>(null);
 const STORAGE = "otm-lang";
 
 export function I18nProvider({ children }: { children: ReactNode }) {
@@ -357,7 +349,7 @@ export function I18nProvider({ children }: { children: ReactNode }) {
     setLangState(l);
     window.localStorage.setItem(STORAGE, l);
   }, []);
-  const value = useMemo<Ctx>(() => {
+  const value = useMemo<I18nContextValue>(() => {
     const locale = LANGS.find((l) => l.code === lang)?.locale ?? "nb-NO";
     return {
       lang,

@@ -11,3 +11,4 @@
 
 - Menu scanning uses an authenticated server function and the AI Gateway; extraction never writes dishes, so managers must review and explicitly save into their company-scoped menu.
 - Menu import validation and duplicate normalization live in a shared pure module with focused tests, so scanned and edited rows follow the same constraints.
+- The language context is defined separately from dictionaries and provided by the root shell, so live dictionary updates preserve context identity and all route states share the provider.
