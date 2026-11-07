@@ -3,5 +3,5 @@
 - [x] Verify extraction, saving, duplicate handling and mobile layout.
 
 # Language context recovery
-- [ ] Stabilize language context during live updates and cover every route with the provider.
-- [ ] Verify signed-out login and language switching after live updates.
+- [x] Stabilize language context during live updates and cover every route with the provider.
+- [x] Verify signed-out login and language switching after live updates.
