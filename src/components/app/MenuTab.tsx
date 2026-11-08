@@ -8,7 +8,6 @@ import { Confirm, Message, Spinner } from "@/components/app/common";
 import { useI18n, type TKey } from "@/lib/i18n";
 import { menuQuery, type Dish } from "@/lib/manager-data";
 import { cn } from "@/lib/utils";
-import { MenuScanner } from "@/components/app/MenuScanner";
 
 const dishSchema = z.object({ name: z.string().trim().min(1).max(80), category: z.string().trim().min(1).max(40) });
 
@@ -75,7 +74,6 @@ export function MenuTab({ companyId }: { companyId: string }) {
 
   return (
     <>
-      <MenuScanner companyId={companyId} />
       <section className="rounded-2xl border-2 bg-card p-5">
         <h2 className="mb-4 flex items-center gap-2 text-2xl font-bold">
           <Plus className="size-7" aria-hidden /> {t("addDish")}
